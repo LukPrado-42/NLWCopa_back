@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "daltonmenezes.aura-theme",
+        "clinyong.vscode-css-modules",
+        "bradlc.vscode-tailwindcss",
+        "dcortes92.freemarker",
+        "alexcvzz.vscode-sqlite"
+    ]
+}
