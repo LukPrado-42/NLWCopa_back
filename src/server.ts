@@ -8,18 +8,20 @@ import { guessRoutes } from "./routes/guess";
 import { gameRoutes } from "./routes/game";
 import { authRoutes } from "./routes/auth";
 
+require("dotenv").config();
+
 async function bootstrap() {
     const fastify = Fastify({
         logger: true,
     })
-
+    
     await fastify.register(cors, {
         origin: true,
     })
-
+    
     //Em produção, isso precisa ser uma variável ambiente
     await fastify.register(jwt, {
-        secret: "nlwcopa",
+        secret: process.env.JWT_SECRET
     });
 
     await fastify.register(gameRoutes);
@@ -28,7 +30,7 @@ async function bootstrap() {
     await fastify.register(poolRoutes);
     await fastify.register(userRoutes);
 
-    await fastify.listen({ port: 3333, /*host: '0.0.0.0'*/ })
+    await fastify.listen({ port: 3333, host: '0.0.0.0' })
 };
 
 bootstrap();
