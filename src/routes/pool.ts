@@ -212,7 +212,7 @@ export async function poolRoutes(fastify: FastifyInstance) {
             }
         });
 
-        const participants = pool.participants.map((participant) => participant.id);
+        const participants = pool?.participants.map((participant) => participant.id) || [""];
 
         const participantPoints = await Promise.all(participants.map( async (participant) => {
             const guess = await prisma.participant.findUnique({
@@ -244,10 +244,13 @@ export async function poolRoutes(fastify: FastifyInstance) {
                 }
             });
 
-            const guessValidation = guess.guesses.map((guess):number =>{
+            const guessValidation = guess?.guesses.map((guess):number =>{
                     if(guess.firstTeamPoints === guess.game.firstTeamFinalScore 
                         && guess.secondTeamPoints === guess.game.secondTeamFinalScore) {
                         return 3
+                    }
+                    if(guess.game.firstTeamFinalScore === null || guess.game.secondTeamFinalScore === null) {
+                        return 0
                     }
                     if((guess.firstTeamPoints > guess.secondTeamPoints 
                         && guess.game.firstTeamFinalScore > guess.game.secondTeamFinalScore)
