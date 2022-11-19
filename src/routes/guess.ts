@@ -32,8 +32,9 @@ export async function guessRoutes(fastify: FastifyInstance) {
                     poolId,
                     userId: request.user.sub,
                 }
-            }
+            },
         });
+
 
         if(!participant) {
             return reply.status(400).send({
@@ -81,8 +82,6 @@ export async function guessRoutes(fastify: FastifyInstance) {
                 firstTeamPoints,
                 secondTeamPoints
             }
-        })
-
-        return reply.status(201).send()
-    })
+        });
+    });
 }

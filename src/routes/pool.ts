@@ -167,6 +167,7 @@ export async function poolRoutes(fastify: FastifyInstance) {
                 participants: {
                     select: {
                         id: true,
+                        guessPoints: true,
 
                         user: {
                             select: {
@@ -185,5 +186,124 @@ export async function poolRoutes(fastify: FastifyInstance) {
         });
 
         return { pool }
+    });
+
+    fastify.get('/pools/:poolId/participants', {
+        onRequest: [ authenticate ]
+    }, async (request) => {
+        const getPoolParams = z.object({
+            poolId: z.string(),
+        });
+
+        const { poolId } = getPoolParams.parse(request.params);
+//!-----------------------------------------------------------  SE DER PROBLEMA NO RANKING, MUDAR ISSO
+        const pool = await prisma.pool.findUnique({
+            where: {
+                id: poolId,
+            },
+            include: {
+                participants:{
+                    select: {
+                        id: true,
+                        guessPoints: true,
+                    },
+                    
+                }
+            }
+        });
+
+        const participants = pool.participants.map((participant) => participant.id);
+
+        const participantPoints = await Promise.all(participants.map( async (participant) => {
+            const guess = await prisma.participant.findUnique({
+                where: {
+                    id: participant,
+                },
+                include: {
+
+                    guesses: {
+                        select: {
+                            firstTeamPoints: true,
+                            secondTeamPoints: true,
+
+                            game: {
+                                select: {
+                                    firstTeamFinalScore: true,
+                                    secondTeamFinalScore: true,
+                                }
+                            }
+                        },
+                        where: {
+                            game :{
+                                date: {
+                                    lt: new Date(),
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const guessValidation = guess.guesses.map((guess):number =>{
+                    if(guess.firstTeamPoints === guess.game.firstTeamFinalScore 
+                        && guess.secondTeamPoints === guess.game.secondTeamFinalScore) {
+                        return 3
+                    }
+                    if((guess.firstTeamPoints > guess.secondTeamPoints 
+                        && guess.game.firstTeamFinalScore > guess.game.secondTeamFinalScore)
+                        ||(guess.firstTeamPoints < guess.secondTeamPoints 
+                            && guess.game.firstTeamFinalScore < guess.game.secondTeamFinalScore)
+                            ||(guess.firstTeamPoints === guess.secondTeamPoints 
+                                && guess.game.firstTeamFinalScore === guess.game.secondTeamFinalScore) ){
+                        return 1
+                    }
+                    return 0
+            });
+
+            const totalPoints = ( guessValidation?.length !== 0 ? guessValidation?.reduce((total, partial) => total + partial) : 0);
+            return totalPoints
+        }));
+
+        console.log(participantPoints);
+
+        participants.forEach( async (participant) => {
+            const index = participants.indexOf(participant);
+
+            await prisma.participant.update({
+                where: {
+                    id: participant,
+                },
+                data: {
+                    guessPoints: participantPoints[index],
+                }
+            })
+        });
+
+//!---------------------------------------------------------
+        const ranking = await prisma.participant.findMany({
+            where: {
+                poolId: poolId,
+            },
+            orderBy: {
+                guessPoints: "desc",
+
+            },
+            include: {
+                user:{
+                    select:{
+                        avatarUrl: true,
+                        name: true,
+                    }
+                }
+            }
+        });
+
+        return { 
+            ranking:ranking.map(rank =>{
+                return{
+                    ...rank,
+                }
+            })
+        };
     });
 }
