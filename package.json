@@ -29,6 +29,8 @@
     "@prisma/client": "^4.5.0",
     "@types/node": "^18.11.9",
     "fastify": "^4.9.2",
+    "node-fecth": "^0.0.1-security",
+    "node-fetch": "^3.3.0",
     "short-unique-id": "^4.4.4",
     "zod": "^3.19.1"
   }

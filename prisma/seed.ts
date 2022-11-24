@@ -4,6 +4,43 @@ const prisma = new PrismaClient();
 
 async function main() {
 
+    const user1 = await prisma.user.create({
+        data: {
+          name: 'Diego',
+          email: 'diego.doe@gmail.com',
+          avatarUrl: 'https://github.com/diego3g.png',
+        }
+      });
+
+    const user2 = await prisma.user.create({
+        data: {
+          name: 'Rodrigo',
+          email: 'rodrigo.doe@gmail.com',
+          avatarUrl: 'https://github.com/rodrigorgtic.png',
+        }
+      });
+
+      const pool = await prisma.pool.create({
+        data: {
+          title: 'Example Pool',
+          code: 'BOL123',
+          ownerId: user1.id,
+    
+          participants: {
+            create: {
+              userId: user1.id,
+            }
+          }
+        }
+      });
+
+      const participant2 = await prisma.participant.create({
+        data: {
+            userId: user2.id,
+            poolId: pool.id,
+        }
+      })
+
     //----------------------------------PRIMEIRA RODADA
     await prisma.game.create({   
         data: {
@@ -11,6 +48,8 @@ async function main() {
             firstTeamCountryCode: "QA",
             secondTeamCountryCode: "EC",
             gameStage: "GRUPO A", 
+            firstTeamFinalScore: 0,
+            secondTeamFinalScore: 2,
         }
     });
     await prisma.game.create({    
@@ -19,6 +58,8 @@ async function main() {
             firstTeamCountryCode: "gb-eng",
             secondTeamCountryCode: "IR",
             gameStage: "GRUPO B",
+            firstTeamFinalScore: 6,
+            secondTeamFinalScore: 2,
         }
     });
     await prisma.game.create({    
@@ -27,6 +68,8 @@ async function main() {
             firstTeamCountryCode: "SN",
             secondTeamCountryCode: "NL",
             gameStage: "GRUPO A",
+            firstTeamFinalScore: 0,
+            secondTeamFinalScore: 2,
         }
     });
     await prisma.game.create({    
@@ -35,6 +78,8 @@ async function main() {
             firstTeamCountryCode: "US",
             secondTeamCountryCode: "gb-wls",
             gameStage: "GRUPO B",
+            firstTeamFinalScore: 1,
+            secondTeamFinalScore: 1,
         }
     });
     await prisma.game.create({    
@@ -43,6 +88,8 @@ async function main() {
             firstTeamCountryCode: "AR",
             secondTeamCountryCode: "SA",
             gameStage: "GRUPO C",
+            firstTeamFinalScore: 1,
+            secondTeamFinalScore: 2,
         }
     });
     await prisma.game.create({    
@@ -51,6 +98,8 @@ async function main() {
             firstTeamCountryCode: "DK",
             secondTeamCountryCode: "TN",
             gameStage: "GRUPO D",
+            firstTeamFinalScore: 0,
+            secondTeamFinalScore: 0,
         }
     });
     await prisma.game.create({    
@@ -59,6 +108,8 @@ async function main() {
             firstTeamCountryCode: "MX",
             secondTeamCountryCode: "PL",
             gameStage: "GRUPO C",
+            firstTeamFinalScore: 0,
+            secondTeamFinalScore: 0,
         }
     });
     await prisma.game.create({    
@@ -67,6 +118,8 @@ async function main() {
             firstTeamCountryCode: "FR",
             secondTeamCountryCode: "AU",
             gameStage: "GRUPO D",
+            firstTeamFinalScore: 4,
+            secondTeamFinalScore: 1,
         }
     });
     await prisma.game.create({    
@@ -75,6 +128,8 @@ async function main() {
             firstTeamCountryCode: "MA",
             secondTeamCountryCode: "HR",
             gameStage: "GRUPO F",
+            firstTeamFinalScore: 0,
+            secondTeamFinalScore: 0,
         }
     });
     await prisma.game.create({    
@@ -83,6 +138,8 @@ async function main() {
             firstTeamCountryCode: "DE",
             secondTeamCountryCode: "JP",
             gameStage: "GRUPO E",
+            firstTeamFinalScore: 1,
+            secondTeamFinalScore: 2,
         }
     });
     await prisma.game.create({    
@@ -91,6 +148,8 @@ async function main() {
             firstTeamCountryCode: "ES",
             secondTeamCountryCode: "CR",
             gameStage: "GRUPO E",
+            firstTeamFinalScore: 7,
+            secondTeamFinalScore: 0,
         }
     });
     await prisma.game.create({    
@@ -99,6 +158,8 @@ async function main() {
             firstTeamCountryCode: "BE",
             secondTeamCountryCode: "CA",
             gameStage: "GRUPO F",
+            firstTeamFinalScore: 1,
+            secondTeamFinalScore: 0,
         }
     });
     await prisma.game.create({    

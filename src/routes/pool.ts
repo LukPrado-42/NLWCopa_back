@@ -38,12 +38,9 @@ export async function poolRoutes(fastify: FastifyInstance) {
                 }
             })
         } catch {
-            await prisma.pool.create({
-                data: {
-                    title,
-                    code
-                }
-            })
+            {
+                console.log("error");
+            }
         };
 
         return reply.status(201).send({ code })
@@ -271,15 +268,21 @@ export async function poolRoutes(fastify: FastifyInstance) {
 
         participants.forEach( async (participant) => {
             const index = participants.indexOf(participant);
+            console.log(index);
 
-            await prisma.participant.update({
-                where: {
-                    id: participant,
-                },
-                data: {
-                    guessPoints: participantPoints[index],
-                }
-            })
+            try {
+                
+                await prisma.participant.update({
+                        where: {
+                                id: participant,
+                            },
+                            data: {
+                                    guessPoints: participantPoints[index],
+                                }
+                            })
+            } catch (error) {
+                console.log(error);
+            }
         });
 
 //!---------------------------------------------------------
